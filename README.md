@@ -23,6 +23,7 @@ The presented tool is Source to Source compiles (S2S) based on BSC's [Mercurium 
 + autoconf-2.59 (or newer)
 + libtool-1.5.22 (or newer)
 + gcc and g++ (4.4)
++ Mercurium
 
 ###Installation Instructions:
 
