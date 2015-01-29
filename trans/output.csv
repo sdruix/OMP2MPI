@@ -1,0 +1,265 @@
+***PowerTOP Report***
+**System Information**
+
+PowerTOP Version;v2.5
+Kernel Version;Linux version 3.13.0-39-generic (buildd@roseapple) (gcc version 4.8.2 (Ubuntu 4.8.2-19ubuntu1) ) #66-Ubuntu SMP Tue Oct 28 13:31:23 UTC 2014
+System Name;ASUSTeK Computer INC. P5K-VM System Version
+CPU Information;2x  Intel(R) Core(TM)2 Duo CPU     E6750  @ 2.66GHz
+OS Information;Ubuntu 14.04.1 LTS
+
+**Power Consumption Summary**
+468.7 wakeups/second, 0.0 GPU ops/second, 0.0 VFS ops/sec, 14.9 GFX wakes/sec and 6.6% CPU use
+
+Usage;Events/s;Category;Description
+  0.1%;165.9;Timer;hrtimer_wakeup
+  3.8%;109.6;Process;/usr/lib/firefox/firefox 
+  0.0%; 38.9;Process;/opt/google/talkplugin/GoogleTalkPlugin 
+  0.0%; 36.2;kWork;od_dbs_timer
+  0.1%; 33.8;Process;/usr/lib/firefox/plugin-container /usr/lib/flashplugin-installer/libflashplayer.so -greomni /usr/lib/firefox/omni.ja -appomni /
+  1.2%; 19.7;Process;/usr/lib/jvm/default-java/bin/java -Djdk.home=/usr/lib/jvm/default-java -classpath /home/sdruix/netbeans-8.0.1/platform/lib/boo
+  0.1%; 16.4;Timer;tick_sched_timer
+  0.1%; 14.6;Interrupt;[3] net_rx(softirq)
+  0.0%;  8.9;Process;/usr/sbin/mysqld --defaults-file=/home/sdruix/.local/share/akonadi/mysql.conf --datadir=/home/sdruix/.local/share/akonadi/db_da
+  0.0%;  6.5;Process;[rcu_sched]
+  0.1%;  3.2;Process;kwin -session 1015e127cc11b000139988326900000018200000_1416480320_336835 
+
+**Processor Idle state report**
+
+Package 0;;;CPU 0
+;;;CPU 1
+
+**Processor Frequency Report**
+
+Package 0;;;CPU 0
+2.67 GHz;   5.8% ;;;2.67 GHz;   4.5% 
+2.00 GHz;  35.1% ;;;2.00 GHz;  32.5% 
+Idle;  59.1% ;;;Idle;  63.0% 
+;;;CPU 1
+;;;2.67 GHz;   2.0% 
+;;;2.00 GHz;   3.5% 
+;;;Idle;  94.5% 
+
+**Overview of Software Power Consumers**
+
+Usage;Wakeups/s;GPU ops/s;Disk IO/s;GFX Wakeups/s;Category;Description
+  1.4 ms/s;165.9;;;;Timer;hrtimer_wakeup
+ 38.4 ms/s;109.6;;; 12.1;Process;/usr/lib/firefox/firefox 
+269.7 us/s; 38.9;;;;Process;/opt/google/talkplugin/GoogleTalkPlugin 
+219.0 us/s; 36.2;;;;kWork;od_dbs_timer
+  1.2 ms/s; 33.8;;;;Process;/usr/lib/firefox/plugin-container /usr/lib/flashplugin-installer/libflashplayer.so -greomni /usr/lib/firefox/omni.ja -appomni /
+ 12.2 ms/s; 19.7;;;  1.4;Process;/usr/lib/jvm/default-java/bin/java -Djdk.home=/usr/lib/jvm/default-java -classpath /home/sdruix/netbeans-8.0.1/platform/lib/boo
+513.8 us/s; 16.4;;;;Timer;tick_sched_timer
+533.1 us/s; 14.6;;;;Interrupt;[3] net_rx(softirq)
+239.9 us/s;  8.9;;;;Process;/usr/sbin/mysqld --defaults-file=/home/sdruix/.local/share/akonadi/mysql.conf --datadir=/home/sdruix/.local/share/akonadi/db_da
+ 45.9 us/s;  6.5;;;;Process;[rcu_sched]
+506.1 us/s;  3.2;;;  1.3;Process;kwin -session 1015e127cc11b000139988326900000018200000_1416480320_336835 
+135.7 us/s;  3.5;;;;Process;/usr/lib/firefox/plugin-container /opt/google/talkplugin/libnpgoogletalk.so -greomni /usr/lib/firefox/omni.ja -appomni /usr/lib
+187.7 us/s;  2.3;;;;Process;avahi-daemon: running [sdruix-P5K-VM.local] 
+  5.4 ms/s; 0.05;;;;Process;/home/sdruix/.dropbox-dist/dropbox-lnx.x86-2.10.52/dropbox 
+244.3 us/s;  1.3;;;;Interrupt;[21] uhci_hcd:usb4
+163.7 us/s;  1.0;;;;Interrupt;[4] block(softirq)
+ 72.8 us/s;  0.9;;;;Process;akonadiserver 
+  1.2 us/s;  0.9;;;;kWork;blk_delay_work
+641.4 us/s;  0.5;;;  0.0;Process;/usr/bin/konsole -session 1015e127cc11b000141259013400000014610024_1416480320_253982 
+ 61.7 us/s;  0.7;;;;kWork;disk_events_workfn
+193.5 us/s;  0.5;;;;Interrupt;[9] RCU(softirq)
+ 37.1 us/s;  0.4;;;;Process;[jbd2/sda8-8]
+  0.9 ms/s;;;;;Process;/usr/bin/X -core :0 -seat seat0 -auth /var/run/lightdm/root/:0 -nolisten tcp vt7 -novtswitch 
+263.5 us/s; 0.20;;;;Interrupt;[45] radeon
+ 72.0 us/s; 0.25;;;;kWork;delayed_fput
+175.3 us/s; 0.15;;;;Process;ktorrent -session 1015e127cc11b000141137959000000015581246_1416480320_253857 
+ 11.0 us/s; 0.20;;;;kWork;bdi_writeback_workfn
+  2.4 us/s; 0.20;;;;Timer;watchdog_timer_fn
+466.9 us/s;;;;;Process;powertop --csv=output.csv 
+  6.5 us/s; 0.15;;;;Process;gpg-agent --daemon --sh 
+  0.5 us/s; 0.15;;;;Timer;sched_rt_period_timer
+125.3 us/s; 0.10;;;;Process;/usr/bin/dolphin --icon system-file-manager -caption Dolphin /home/sdruix/Desktop/H4H 
+122.2 us/s; 0.10;;;;kWork;ttm_bo_delayed_workqueue
+ 85.0 us/s; 0.10;;;;Interrupt;[7] sched(softirq)
+263.6 us/s;;;;;Timer;delayed_work_timer_fn
+  8.6 us/s; 0.10;;;;Process;[jbd2/sda7-8]
+  4.0 us/s; 0.10;;;;Process;/usr/lib/i386-linux-gnu/zeitgeist-fts 
+  3.4 us/s; 0.10;;;;Process;NetworkManager 
+  3.2 us/s; 0.10;;;;Process;/usr/bin/zeitgeist-datahub 
+  1.3 us/s; 0.10;;;;Process;/usr/lib/rtkit/rtkit-daemon 
+  0.5 us/s; 0.10;;;;Process;[watchdog/0]
+  0.5 us/s; 0.10;;;;Process;[watchdog/1]
+204.1 us/s;;;;;Interrupt;[1] timer(softirq)
+ 17.4 us/s; 0.05;;;;Process;kdeinit4: kded4 [kdeinit] 
+142.5 us/s;;;;;Timer;process_timeout
+  6.2 us/s; 0.05;;;;Process;/usr/lib/libreoffice/program/soffice.bin --writer /home/sdruix/Desktop/H4H/Energy_Mgt_Utilities_V1.4.odt --splash-pipe=5 
+  2.8 us/s; 0.05;;;;Process;[khugepaged]
+  2.3 us/s; 0.05;;;;Process;/usr/bin/akonadi_control 
+  1.2 us/s; 0.05;;;;Process;/usr/bin/kactivitymanagerd 
+  0.6 us/s; 0.05;;;;Process;/usr/lib/libreoffice/program/oosplash --writer /home/sdruix/Desktop/H4H/Energy_Mgt_Utilities_V1.4.odt 
+  0.6 us/s; 0.05;;;;kWork;push_to_pool
+ 84.8 us/s;;;;;Interrupt;[44] eth0
+ 74.9 us/s;;;;;Process;[kworker/1:0]
+ 65.5 us/s;;;;;Timer;rh_timer_func
+ 58.5 us/s;;;;;Process;[kworker/0:2]
+ 38.2 us/s;;;;;Interrupt;[22] ata_piix
+ 17.0 us/s;;;;;Process;[kworker/u8:1]
+ 11.0 us/s;;;;;Process;[ksoftirqd/1]
+  7.3 us/s;;;;;kWork;ata_sff_pio_task
+  6.6 us/s;;;;;Process;[ksoftirqd/0]
+  5.6 us/s;;;;;kWork;vmstat_update
+  5.3 us/s;;;;;Timer;clocksource_watchdog
+  3.8 us/s;;;;;Process;[kworker/u9:1]
+  2.7 us/s;;;;;Timer;sky2_watchdog
+  1.7 us/s;;;;;Timer;ipmi_timeout
+  0.8 us/s;;;;;Timer;vblank_disable_fn
+  0.8 us/s;;;;;Timer;igmp_timer_expire
+  0.7 us/s;;;;;Timer;writeout_period
+  0.6 us/s;;;;;Timer;commit_timeout
+  0.5 us/s;;;;;Timer;it_real_fn
+  0.5 us/s;;;;;Interrupt;[8] hrtimer(softirq)
+  0.4 us/s;;;;;Timer;dev_watchdog
+  0.3 us/s;;;;;kWork;neigh_periodic_work
+  0.3 us/s;;;;;Timer;fib6_gc_timer_cb
+  0.3 us/s;;;;;kWork;output_poll_execute
+  0.3 us/s;;;;;Interrupt;[2] net tx(softirq)
+  0.1 us/s;;;;;Timer;tcp_write_timer
+  0.1 us/s;;;;;kWork;radeon_unpin_work_func
+  0.1 us/s;;;;;Timer;tcp_delack_timer
+
+**Device Power Report**
+
+Usage;Device name
+  6.6%;CPU use
+100.0%;PCI Device: Intel Corporation 82801 PCI Bridge
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #2
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #4
+100.0%;PCI Device: Intel Corporation 82G33/G31/P35/P31 Express PCI Express Root Port
+100.0%;PCI Device: Intel Corporation 82G33/G31/P35/P31 Express DRAM Controller
+100.0%;USB device: Dell USB Keyboard Hub (Dell)
+100.0%;USB device: UHCI Host Controller
+100.0%;USB device: UHCI Host Controller
+100.0%;USB device: USB Optical Mouse (Logitech)
+100.0%;USB device: Dell USB Keyboard Hub (Dell)
+100.0%;USB device: USB RECEIVER (Logitech)
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #5
+100.0%;PCI Device: VIA Technologies, Inc. VT6306/7/8 [Fire II(M)] IEEE 1394 OHCI Controller
+100.0%;PCI Device: JMicron Technology Corp. JMB368 IDE controller
+100.0%;PCI Device: Marvell Technology Group Ltd. 88E8056 PCI-E Gigabit Ethernet Controller
+100.0%;PCI Device: Advanced Micro Devices, Inc. [AMD/ATI] RV610 [Radeon HD 2400 PRO]
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) HD Audio Controller
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) PCI Express Port 1
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) PCI Express Port 5
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) PCI Express Port 6
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #6
+100.0%;PCI Device: Intel Corporation 82801IB (ICH9) LPC Interface Controller
+100.0%;PCI Device: Intel Corporation 82801IB (ICH9) 2 port SATA Controller [IDE mode]
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) SMBus Controller
+100.0%;PCI Device: Intel Corporation 82801I (ICH9 Family) 2 port SATA Controller [IDE mode]
+100.0%;PCI Device: Advanced Micro Devices, Inc. [AMD/ATI] RV610 HDMI Audio [Radeon HD 2350/2400 Series]
+ 44.7 pkts/s;Network interface: eth0 (sky2)
+  0.0%;Audio codec hwC0D0: Realtek
+  0.0%;USB device: UHCI Host Controller
+  0.0%;USB device: UHCI Host Controller
+  0.0%;USB device: UHCI Host Controller
+  0.0%;USB device: UHCI Host Controller
+  0.0%;USB device: EHCI Host Controller
+  0.0%;USB device: EHCI Host Controller
+
+**Process device activity**
+
+Process;Device
+bluetoothd;/dev/rfkill
+acpid;/dev/input/event0
+;/dev/input/event1
+;/dev/input/event10
+;/dev/input/event11
+;/dev/input/event12
+;/dev/input/event13
+;/dev/input/event14
+;/dev/input/event4
+;/dev/input/event5
+;/dev/input/event6
+;/dev/input/event7
+;/dev/input/event8
+;/dev/input/event9
+Xorg;/dev/dri/card0
+;/dev/input/event0
+;/dev/input/event1
+;/dev/input/event2
+;/dev/input/event3
+;/dev/input/event4
+;/dev/input/event5
+;/dev/vga_arbiter
+upowerd;/dev/cpu_dma_latency
+;/dev/network_latency
+kwin;/dev/dri/card0
+pulseaudio;/dev/snd/controlC0
+;/dev/snd/controlC0
+;/dev/snd/controlC0
+;/dev/snd/controlC1
+;/dev/snd/controlC1
+;/dev/snd/controlC0
+;/dev/snd/controlC0
+;/dev/snd/controlC0
+;/dev/snd/controlC1
+;/dev/snd/controlC1
+firefox;/dev/dri/card0
+java;/dev/random
+;/dev/random
+;/dev/random
+systemd-logind;/dev/input/event0
+;/dev/input/event1
+
+**Software Settings in need of Tuning**
+
+Description;Script
+VM writeback timeout;"echo '1500' > '/proc/sys/vm/dirty_writeback_centisecs';"
+NMI watchdog should be turned off;"echo '0' > '/proc/sys/kernel/nmi_watchdog';"
+Enable Audio codec power management;"echo '1' > '/sys/module/snd_hda_intel/parameters/power_save';"
+Enable SATA link power Managmenet for host3;"echo 'min_power' > '/sys/class/scsi_host/host3/link_power_management_policy';"
+Enable SATA link power Managmenet for host0;"echo 'min_power' > '/sys/class/scsi_host/host0/link_power_management_policy';"
+Enable SATA link power Managmenet for host1;"echo 'min_power' > '/sys/class/scsi_host/host1/link_power_management_policy';"
+Enable SATA link power Managmenet for host2;"echo 'min_power' > '/sys/class/scsi_host/host2/link_power_management_policy';"
+Autosuspend for USB device Dell USB Keyboard Hub [Dell];"echo 'auto' > '/sys/bus/usb/devices/3-2.1/power/control';"
+Autosuspend for USB device USB Optical Mouse [Logitech];"echo 'auto' > '/sys/bus/usb/devices/4-2/power/control';"
+Autosuspend for USB device USB RECEIVER [Logitech];"echo 'auto' > '/sys/bus/usb/devices/3-1/power/control';"
+Runtime PM for PCI Device Advanced Micro Devices, Inc. [AMD/ATI] RV610 [Radeon HD 2400 PRO];"echo 'auto' > '/sys/bus/pci/devices/0000:01:00.0/power/control';"
+Runtime PM for PCI Device Advanced Micro Devices, Inc. [AMD/ATI] RV610 HDMI Audio [Radeon HD 2350/2400 Series];"echo 'auto' > '/sys/bus/pci/devices/0000:01:00.1/power/control';"
+Runtime PM for PCI Device Marvell Technology Group Ltd. 88E8056 PCI-E Gigabit Ethernet Controller;"echo 'auto' > '/sys/bus/pci/devices/0000:02:00.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) PCI Express Port 6;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1c.5/power/control';"
+Runtime PM for PCI Device VIA Technologies, Inc. VT6306/7/8 [Fire II(M)] IEEE 1394 OHCI Controller;"echo 'auto' > '/sys/bus/pci/devices/0000:05:02.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) HD Audio Controller;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1b.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #2;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1a.7/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #6;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1a.2/power/control';"
+Runtime PM for PCI Device Intel Corporation 82G33/G31/P35/P31 Express PCI Express Root Port;"echo 'auto' > '/sys/bus/pci/devices/0000:00:01.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82G33/G31/P35/P31 Express DRAM Controller;"echo 'auto' > '/sys/bus/pci/devices/0000:00:00.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) PCI Express Port 1;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1c.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) SMBus Controller;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1f.3/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #5;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1a.1/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1d.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1d.1/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1d.2/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #4;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1a.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) PCI Express Port 5;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1c.4/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801 PCI Bridge;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1e.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801IB (ICH9) LPC Interface Controller;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1f.0/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801IB (ICH9) 2 port SATA Controller [IDE mode];"echo 'auto' > '/sys/bus/pci/devices/0000:00:1f.2/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) 2 port SATA Controller [IDE mode];"echo 'auto' > '/sys/bus/pci/devices/0000:00:1f.5/power/control';"
+Runtime PM for PCI Device Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1;"echo 'auto' > '/sys/bus/pci/devices/0000:00:1d.7/power/control';"
+Runtime PM for PCI Device JMicron Technology Corp. JMB368 IDE controller;"echo 'auto' > '/sys/bus/pci/devices/0000:03:00.0/power/control';"
+Wake-on-lan status for device eth0;"ethtool -s eth0 wol d;"
+
+**Optimal Tuned Software Settings**
+
+Description
+Autosuspend for USB device Dell USB Keyboard Hub [Dell]
+Autosuspend for USB device UHCI Host Controller [usb7]
+Autosuspend for USB device UHCI Host Controller [usb8]
+Autosuspend for USB device UHCI Host Controller [usb6]
+Autosuspend for USB device UHCI Host Controller [usb3]
+Autosuspend for USB device EHCI Host Controller [usb1]
+Autosuspend for USB device EHCI Host Controller [usb2]
+Autosuspend for USB device UHCI Host Controller [usb4]
+Autosuspend for USB device UHCI Host Controller [usb5]
+Using 'ondemand' cpufreq governor
+

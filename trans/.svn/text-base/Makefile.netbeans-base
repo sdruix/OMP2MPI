@@ -1,0 +1,77 @@
+# This is a template to compile Mercurium phases
+# (leave END variable empty)
+END=
+
+# IMPORTANT: Do not forget to fill the two variables in Makefile.common
+include ../Makefile.common
+
+# IMPORTANT: Fill this with the name of the current phase
+PHASE_NAME=inline-phase
+
+# Write here the list of sources (all *.cpp *.cc *.h and *.hpp files you need)
+SOURCES=\
+	inline_phase.hpp \
+	inline_phase.cpp \
+    $(END)
+
+prefix=`cat ../../Makefile | grep ^prefix | awk '{print $$3}'`
+path := $(shell pwd)
+
+# ------------------------------------------------------------------
+# NOTE: Do not modify anything else from this point
+# ------------------------------------------------------------------
+PHASE_NAME_SO=$(PHASE_NAME).so
+
+# Get the list of headers
+HEADERS=$(filter %.h %.hpp, $(SOURCES))
+CODE_FILES=$(filter %.cpp %.cc, $(SOURCES))
+
+# This is what mandated .cpp files in SOURCES :)
+BASENAME_OBJECTS=$(basename $(CODE_FILES))
+OBJECTS=$(addsuffix .o, $(BASENAME_OBJECTS))
+
+# Compiler configuration
+CXX=g++
+CXXFLAGS=-Wall -fPIC -g
+LDFLAGS=
+MCXX_CXXFLAGS=$(CXXFLAGS) $(tl_cxxflags)
+MCXX_LDFLAGS=$(LDFLAGS) $(tl_ldflags)
+
+all: $(PHASE_NAME_SO) config.$(PHASE_NAME)
+
+config.$(PHASE_NAME) : config.myphase.in
+	@echo [SED] $@
+	@sed -e 's|@PWD@|$(path)|' -e 's|@PHASE_NAME@|$(PHASE_NAME)|' config.myphase.in > $@
+	@echo "Do not forget to copy $@ in Mercurium config.d directory"
+	@echo "Do not forget to create a soft link $(PHASE_NAME)cc -> mcxx in Mercurium bin directory"
+
+$(PHASE_NAME_SO): $(OBJECTS)
+	@echo [LD] $@
+	@$(CXX) -shared -o $@ $+ $(MCXX_LDFLAGS)
+	@echo
+	@echo Phase generated successfully in file: $@
+
+%.o : %.cpp $(HEADERS)
+	@echo [CXX] $@
+	@$(CXX) -c $(MCXX_CXXFLAGS) -o $@ $<
+
+%.o : %.cc $(HEADERS)
+	@echo [CXX] $<
+	@$(CXX) -c $(MCXX_CXXFLAGS) -o $@ $<
+
+.PHONY: clean
+clean:
+	@echo [CLEAN] $(PHASE_NAME_SO)
+	@rm -f $(PHASE_NAME_SO)
+	@rm -f config.$(PHASE_NAME)
+	@for i in $(OBJECTS); do \
+	   echo [CLEAN] $$i; \
+	   rm -f $$i; \
+	done
+
+install:
+	@echo "Copying 10.config.$(PHASE_NAME) file to $(prefix)..."
+	@cp config.$(PHASE_NAME) $(prefix)/share/mcxx/config.d/10.config.$(PHASE_NAME)
+	@echo "Generating softlinks..."
+	@ln -fs $(prefix)/bin/mcxx $(prefix)/bin/$(PHASE_NAME)c++
+	@ln -fs $(prefix)/bin/mcxx $(prefix)/bin/$(PHASE_NAME)cc

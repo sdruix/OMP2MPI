@@ -1,0 +1,21 @@
+[@PHASE_NAME@cc]
+language = C
+options =
+preprocessor_name = gcc
+preprocessor_options = -E
+compiler_name = gcc
+compiler_options = 
+linker_name = gcc
+linker_options = 
+compiler_phase=@PWD@/@PHASE_NAME@.so
+
+[@PHASE_NAME@c++]
+language = C++
+options =
+preprocessor_name = g++
+preprocessor_options = -E
+compiler_name = g++
+compiler_options = 
+linker_name = g++
+linker_options = 
+compiler_phase=@PWD@/@PHASE_NAME@.so

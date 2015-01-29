@@ -1,0 +1,23 @@
+[trans-phasecc]
+language = C
+options =  
+preprocessor_name = gcc 
+preprocessor_options = -E 
+compiler_name = gcc 
+compiler_options =  -lmpi 
+linker_name = gcc 
+linker_options =  -lmpi 
+compiler_phase=/home/sdruix/mcxx/omp_to_mpi/trans/trans-phase.so 
+pragma_prefix=omp
+
+[trans-phasec++] 
+language = C++  
+options =  
+preprocessor_name = g++  
+preprocessor_options = -E 
+compiler_name = g++  
+compiler_options =  -lmpi
+linker_name = g++  
+linker_options =  -lmpi 
+compiler_phase=/home/sdruix/mcxx/omp_to_mpi/trans/trans-phase.so 
+pragma_prefix=omp
