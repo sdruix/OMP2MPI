@@ -1,0 +1,56 @@
+# In order to compile a phase we need the top level source and top level build
+# directory of Mercurium (NOTE: they will be the same if you ran 'configure' in
+# the same directory where the source was)
+#
+# This should be a complete path
+#
+# Example:
+#
+# MERCURIUM_SOURCE_DIRECTORY=$(HOME)/mercurium/source
+# MERCURIUM_BUILD_DIRECTORY=$(HOME)/mercurium/build 
+abs_srcdir=`cat ../../Makefile | grep ^abs_srcdir | awk '{print $$3}'`
+abs_builddir = `cat ../../Makefile | grep ^abs_builddir | awk '{print $$3}'`
+
+# ** Fill these two variables **
+# This is the directory created when you extracted the .tar.bz2
+# for instance $(HOME)/mercurium/mcxx-1.3.0
+MERCURIUM_SOURCE_DIRECTORY=$(abs_srcdir)/
+
+# This is the directory where you ran configure. If you followed mercurium web
+# site instructions, this is likely to be $(MERCURIUM_SOURCE_DIRECTORY) as well
+MERCURIUM_BUILD_DIRECTORY=$(abs_builddir)/
+
+# ------------------------------------------------------------------
+# NOTE: Do not modify anything else from this point
+# ------------------------------------------------------------------
+
+tl_cflags=-I $(MERCURIUM_SOURCE_DIRECTORY)/src/tl \
+			-I $(MERCURIUM_SOURCE_DIRECTORY)/src/frontend \
+			-I $(MERCURIUM_SOURCE_DIRECTORY)/src/driver \
+			-I $(MERCURIUM_SOURCE_DIRECTORY)/lib \
+			-I $(MERCURIUM_SOURCE_DIRECTORY)/src/tl/omp/core \
+			-I $(MERCURIUM_SOURCE_DIRECTORY)/src/tl/omp/profile \
+			-I $(MERCURIUM_BUILD_DIRECTORY)/src/tl \
+			-I $(MERCURIUM_BUILD_DIRECTORY)/src/frontend \
+			-I $(MERCURIUM_BUILD_DIRECTORY)/src/driver \
+			-I $(MERCURIUM_BUILD_DIRECTORY)/lib \
+			-I $(MERCURIUM_BUILD_DIRECTORY)/omp_to_hmpp/common \
+			-I $(MERCURIUM_BUILD_DIRECTORY)/src/tl/omp/core \
+			-I $(MERCURIUM_BUILD_DIRECTORY)/src/tl/omp/profile \
+
+tl_cxxflags=$(tl_cflags)
+
+# If we used libtool this would not be necessary
+tl_ldflags=-L$(MERCURIUM_BUILD_DIRECTORY)/src/tl/.libs \
+			-L$(MERCURIUM_BUILD_DIRECTORY)/src/tl/htl/.libs \
+			-L$(MERCURIUM_BUILD_DIRECTORY)/src/tl/omp/core/.libs \
+			-L$(MERCURIUM_BUILD_DIRECTORY)/src/tl/omp/profile/.libs \
+			-L$(MERCURIUM_BUILD_DIRECTORY)/src/frontend/.libs \
+			-L$(MERCURIUM_BUILD_DIRECTORY)/lib/.libs \
+			-Wl,-rpath,$(MERCURIUM_BUILD_DIRECTORY)/src/tl/.libs \
+			-Wl,-rpath,$(MERCURIUM_BUILD_DIRECTORY)/src/tl/htl/.libs \
+			-Wl,-rpath,$(MERCURIUM_BUILD_DIRECTORY)/src/tl/omp/core/.libs \
+			-Wl,-rpath,$(MERCURIUM_BUILD_DIRECTORY)/src/tl/omp/profile/.libs \
+			-Wl,-rpath,$(MERCURIUM_BUILD_DIRECTORY)/src/frontend/.libs \
+			-Wl,-rpath,$(MERCURIUM_BUILD_DIRECTORY)/lib/.libs \
+			-lmcxx-extstruct -lmcxx-utils -lmcxx-process -lmcxx -L/opt/mcxx/lib/libtl-hlt.so -ltlomp-core -ltlomp-profile lmpi
