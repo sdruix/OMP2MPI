@@ -392,16 +392,21 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
                 // cin.get();
                 // cin.get();
                 if(staticC!=0) {
+                      
                     mpiVariantStructurePart1 << "for (int to=1;to<size;++to) {";
-                    if(_ioVars.size()>0) {      
-                        mpiVariantStructurePart1 <<"if(to!=size-1) {"
-                                <<"partSize = "<<maxS<<"/ (size-1);"
-                                << "offset = partSize * (to-1);"
-                                << "} else {"
-                                << "partSize = "<<maxS<<"/ (size-1) + "<<maxS <<"%"<<"(size-1) ;"
-                                << "offset = " << maxS << "/ (size-1) * (to-1);"
+                    
+                        mpiVariantStructurePart1 <<"if(to!=size-1) {";
+                        if(_inVars.size()!=0)
+                        mpiVariantStructurePart1 <<"partSize = "<<maxS<<"/ (size-1);";
+                        mpiVariantStructurePart1       << "offset = partSize * (to-1);"
+                                << "} else {";
+                        if(_inVars.size()!=0)
+                              mpiVariantStructurePart1  << "partSize = "<<maxS<<"/ (size-1) + "<<maxS <<"%"<<"(size-1) ;";
+                                mpiVariantStructurePart1 << "offset = " << maxS << "/ (size-1) * (to-1);"
                                 << "}";
-                    }
+                    if(_inVars.size()==0)
+                        mpiVariantStructurePart1 << "MPI_Send(&offset, 1, MPI_INT,to,ATAG,MPI_COMM_WORLD);";
+                    
                     for(int i = 0; i<_inVars.size(); ++i){
                         string upperType = std::string(_inVars[i].type);
                         std::transform(upperType.begin(), upperType.end(),upperType.begin(), ::toupper);
@@ -444,9 +449,10 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
                         mpiVariantStructurePart1<< "MPI_Send(&"<<_reducedVars[i].name<<", 1, MPI_"<<upperType<<",to,ATAG,MPI_COMM_WORLD);";
                     }
                     
+                        
+                    mpiVariantStructurePart1 << "}";
+                    mpiVariantStructurePart1 << "for(int from = 1; from<size;++from) {";
                     
-                    mpiVariantStructurePart1 << "}"
-                            << "for(int from = 1; from<size;++from) {";
                     if(_ioVars.size()>0) {
                         mpiVariantStructurePart1 << "if(from!=size-1) {"
                                 << "partSize = "<<maxS<<"/ (size-1);"
@@ -456,6 +462,7 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
                                 << "offset = " << maxS << "/ (size-1) * (from-1);"
                                 << "}";
                     }
+                    
                     for(int i = 0; i<_ioVars.size(); ++i){
                         string upperType = std::string(_ioVars[i].type);
                         std::transform(upperType.begin(), upperType.end(),upperType.begin(), ::toupper);
@@ -682,14 +689,20 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
                     
                     mpiVariantStructurePart4 
                             <<"if(myid!=size-1) {"
-                            << "partSize = "<<maxS<<"/ (size-1);"
-                            << "offset = partSize * (myid-1);"
-                            <<" } else {"
-                            << "partSize = "<<maxS<<"/ (size-1) + "<<maxS <<"%"<<"(size-1) ;"
-                            << "offset = " << maxS << "/ (size-1) * (myid-1);"
-                            << "}"
+                            << "partSize = "<<maxS<<"/ (size-1);";
+                            if(_inVars.size()!=0){
+                            mpiVariantStructurePart4 << "offset = partSize * (myid-1);";
+                             }
+                            mpiVariantStructurePart4 <<" } else {"
+                            << "partSize = "<<maxS<<"/ (size-1) + "<<maxS <<"%"<<"(size-1) ;";
+                            if(_inVars.size()!=0){
+                            mpiVariantStructurePart4 << "offset = " << maxS << "/ (size-1) * (myid-1);";
+                            }
+                            mpiVariantStructurePart4<< "}"
                             << "while(1){";
-                    
+                    if(_inVars.size()==0){
+                        mpiVariantStructurePart4 << "MPI_Recv(&offset, 1, MPI_INT,0,MPI_ANY_TAG,MPI_COMM_WORLD,&stat);";
+                    }
                     
                     for(int i = 0; i<_inVars.size(); ++i){
                         string upperType = std::string(_inVars[i].type);
@@ -1240,9 +1253,7 @@ int TransPhase::isIOVar(string name) {
     return 0;
 }
 int TransPhase::isINVar(string name) {
-    //cout<<"Checking: "<<name<< " "<<_smart_use_table[name].row_last_write_cpu.row<<endl;
-    //cin.get();
-    if(_smart_use_table[name].row_last_write_cpu.row>0) 
+    if(_smart_use_table[name].row_last_write_cpu.row>0 || (_construct_inside_bucle && _smart_use_table[name].row_first_write_cpu.for_num == _construct_num_loop)) 
         return 1;   
     return 0;
 }

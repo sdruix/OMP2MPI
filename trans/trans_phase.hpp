@@ -46,6 +46,7 @@ private:
     bool checkFor(PragmaCustomConstruct construct);
     int get_size_of_array(string name, string declaration);
     vector<infoVar> fill_vars_info(std::unordered_map <std::string,AST_t> params, TL::HLT::Outline outlineAux, PragmaCustomConstruct construct, Source initVar, Scope functionScope, Scope globalScope, int iNOUT);
+    Source generateMPIVariableMessagesSend(vector<infoVar> _inVars, Source initVar, Scope functionScope, string dest, string offset, int withReduced);
     Source modifyReductionOperation(infoVar reducedVar, AST_t constructAST, PragmaCustomConstruct construct);
     AST_t _translation_unit;
     ScopeLink _scope_link;
