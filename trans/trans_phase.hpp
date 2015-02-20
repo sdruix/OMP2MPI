@@ -100,6 +100,7 @@ private:
         int lineS;
         int lineF;
     };
+    ObjectList<Symbol> _prmters;
     typedef unordered_map <string, var_use> Mymap; 
     unordered_map <string, var_use> _smart_use_table;
     std::unordered_map <std::string,AST_t> _ioParams;
@@ -129,6 +130,7 @@ private:
     string transformConstructAST(PragmaCustomConstruct construct, ScopeLink scopeL, Scope sC, Source initVar);
     int _withMemoryLimitation;
     int _oldMPIStyle;
+    int isParam(string p2check);
     void useOldStyle(int staticC, Source mpiVariantStructurePart1, Source mpiVariantStructurePart2, Source mpiVariantStructurePart3, 
                             string maxS, Source initVar, Scope functionScope, Source initValue, 
                             Source conditionToWork, Source mpiFixStructurePart1, Source mpiFixStructurePart2, Statement function_body,

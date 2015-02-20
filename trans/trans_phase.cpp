@@ -25,7 +25,7 @@ TransPhase::TransPhase() : PragmaCustomCompilerPhase("omp") {
     register_directive("schedule");
     register_directive("for check");
     register_directive("for private");
-    
+    register_directive("for threadprivate");
     on_directive_post["parallel"].connect(functor(&TransPhase::pragma_postorder, *this));
     _ATAG = "ATAG";
     _RTAG = "RTAG";
@@ -73,11 +73,11 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
             //            
             TL::HLT::Outline outlineAux(construct.get_enclosing_function().get_scope_link(), statement);
             
-            ObjectList<Symbol> prmters;
             
-            prmters = outlineAux.get_parameter_list();
-            if(prmters.size()==0) {         
-                prmters =outlineAux.recomputeParameters(); // Error in compute_referenced_entities has to repeat this function
+            
+            _prmters = outlineAux.get_parameter_list();
+            if(_prmters.size()==0) {         
+                _prmters =outlineAux.recomputeParameters(); // Error in compute_referenced_entities has to repeat this function
             }
             //prmters = outlineAux.get_parameter_list();
             //  cout<<"Hola"<<endl;
@@ -89,14 +89,14 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
             _construct_loop = _for_ast;
             AST_t minAST = NULL;
             int minLine= std::numeric_limits<int>::max();
-            for(int i = 0; i<prmters.size();++i)
-                cout<<prmters[i].get_name()<<endl;
-            if(prmters.size()>0) {            
-                cout<<"Finding "<<prmters.size()<<" parameters"<<endl;
+            for(int i = 0; i<_prmters.size();++i)
+                cout<<_prmters[i].get_name()<<endl;
+            if(_prmters.size()>0) {            
+                cout<<"Finding "<<_prmters.size()<<" parameters"<<endl;
                 //cout<<construct.get_enclosing_function().get_ast().prettyprint()<<endl;
                 
                 
-                AST_t last_ast = fill_smart_use_table(construct.get_enclosing_function().get_ast(), function_def.get_function_body().get_scope_link(), construct.get_enclosing_function().get_scope_link().get_scope(statement.get_ast()), block_line, prmters,2,0, prevAST);
+                AST_t last_ast = fill_smart_use_table(construct.get_enclosing_function().get_ast(), function_def.get_function_body().get_scope_link(), construct.get_enclosing_function().get_scope_link().get_scope(statement.get_ast()), block_line, _prmters,2,0, prevAST);
                 // cout<<last_ast.prettyprint()<<endl;
                 //
                 for (Mymap::const_iterator it = _smart_use_table.begin(); 
@@ -168,8 +168,12 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
                     } else if(actArg.compare("guided") == 0) {
                         cout<<"Guided Transformation";
                         staticC = 2;
-                    } else {
+                    } else if(actArg.compare("dynamic") == 0){
                         cout<< "Dynamic Transformation"<<endl;
+                    } else {
+                        cout<< "Static in :"<<actArg<<endl;
+                        cout<< "Not possible to work with harcoded number of processors"<<endl;
+                        cin.get();
                     }
                 }
                 
@@ -309,9 +313,42 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
             PragmaCustomClause private_clause = construct.get_clause("private");
             if (private_clause.is_defined()) {
                 commented_loop
-                        << "// Arguments found in shared clausule: \n";
-                cout << "// Arguments found in shared clausule: " << endl;
+                        << "// Arguments found in private clausule: \n";
+                cout << "// Arguments found in private clausule: " << endl;
                 ObjectList<Expression> private_arguments = private_clause.get_expression_list();
+                for (ObjectList<Expression>::iterator it = private_arguments.begin(); it != private_arguments.end(); it++) {
+                    Expression argument(*it);
+                    _privateVars.push_back(argument.prettyprint());
+                }
+            }
+            PragmaCustomClause tPrivate_clause = construct.get_clause("threadprivate");
+            if (tPrivate_clause.is_defined()) {
+                commented_loop
+                        << "// Arguments found in threadprivate clausule: \n";
+                cout << "// Arguments found in threadprivate clausule: " << endl;
+                ObjectList<Expression> private_arguments = tPrivate_clause.get_expression_list();
+                for (ObjectList<Expression>::iterator it = private_arguments.begin(); it != private_arguments.end(); it++) {
+                    Expression argument(*it);
+                    _privateVars.push_back(argument.prettyprint());
+                }
+            }
+            PragmaCustomClause fPrivate_clause = construct.get_clause("firstprivate");
+            if (fPrivate_clause.is_defined()) {
+                commented_loop
+                        << "// Arguments found in firstprivate clausule: \n";
+                cout << "// Arguments found in firstprivate clausule: " << endl;
+                ObjectList<Expression> private_arguments = fPrivate_clause.get_expression_list();
+                for (ObjectList<Expression>::iterator it = private_arguments.begin(); it != private_arguments.end(); it++) {
+                    Expression argument(*it);
+                    _privateVars.push_back(argument.prettyprint());
+                }
+            }
+            PragmaCustomClause lPrivate_clause = construct.get_clause("lastprivate");
+            if (lPrivate_clause.is_defined()) {
+                commented_loop
+                        << "// Arguments found in lastprivate clausule: \n";
+                cout << "// Arguments found in lastprivate clausule: " << endl;
+                ObjectList<Expression> private_arguments = lPrivate_clause.get_expression_list();
                 for (ObjectList<Expression>::iterator it = private_arguments.begin(); it != private_arguments.end(); it++) {
                     Expression argument(*it);
                     _privateVars.push_back(argument.prettyprint());
@@ -685,8 +722,8 @@ void TransPhase::pragma_postorder(PragmaCustomConstruct construct) {
                     
                     AST_t ASTmpiFixStructurePart1 = mpiFixStructurePart1.parse_statement(function_body.get_ast(), function_body.get_scope_link());
                     construct.get_ast().prepend(ASTmpiFixStructurePart1);
-                    for(int k=0 ;k<prmters.size();k++) {
-                        cout<<"k:"<<prmters[k].get_name()<<endl;
+                    for(int k=0 ;k<_prmters.size();k++) {
+                        cout<<"k:"<<_prmters[k].get_name()<<endl;
                     }
                     
                     Source mpiVariantStructurePart4, mpiVariantStructurePart5, mpiVariantStructurePart6;
@@ -1276,8 +1313,26 @@ string TransPhase::transformConstructAST(PragmaCustomConstruct construct, ScopeL
             cout<<expr_list[l].prettyprint()<<endl;
             //            cout<<"1srt: "<<firstO<<endl;
             //            cout<<"2nd: "<<secondO<<endl;   
-            line = replaceAll(line, " ", "");
-            firstO = replaceAll(firstO, " ", "");
+            //line = replaceAll(line, " ", "");
+            string op = expr_list[l].prettyprint().substr(expr_list[l].prettyprint().find_first_of("="), expr_list[l].prettyprint().length());
+//            cout<<"1: "<<firstO<< endl;
+//            cout<<"2: "<<secondO<<endl;
+//            cout<<"o: "<<op<<endl;
+            if(firstO.find_first_of("[")>0 &&firstO.find_first_of("[")<firstO.length()){
+                string type = "";
+                string var = firstO;
+                if(firstO.find_first_of("[")>firstO.find_first_of(" ")) {
+                    type = firstO.substr(0,firstO.find_first_of(" "));
+                    var =  firstO.substr(firstO.find_first_of(" ")+1,firstO.length());
+                }
+                firstO = type + replaceAll(var, " ", "");
+            }
+            line = firstO + replaceAll(op, " ", "");
+//            cout<<"1: "<<firstO<< endl;
+//            cout<<"2: "<<secondO<<endl;
+//            cout<<"o: "<<op<<endl;
+//            cout<<"l: "<<line<<endl;
+//            cin.get();
             operands = splitMathExpression(sC, secondO, 1);
             
             for (int e=0;e<operands.size();e++){ //second Operand
@@ -1414,7 +1469,6 @@ string TransPhase::transformConstructAST(PragmaCustomConstruct construct, ScopeL
                     }
                 }          
             } 
-            //cout<<std::string(mpiReads)<<endl;
             
             if(firstO.find_first_of("[")>= 0 && firstO.find_first_of("[")<firstO.length()) {
                 string actArg = firstO.substr(0,firstO.find_first_of("["));
@@ -1491,7 +1545,7 @@ string TransPhase::transformConstructAST(PragmaCustomConstruct construct, ScopeL
                         if(iterators.find("[")>=0 && iterators.find("[")<iterators.length())
                             iterators = iterators.substr(iterators.find_first_of("[")+1, iterators.length());
                         else
-                            iterators = "";
+                            iterators = iterators.substr(iterators.find_first_of("]")+1, iterators.length());
                         n++;
                         variableNewName << "_"<<actIt;
                         //cout<<"Continue with: "<<iterators<<endl;
@@ -1514,12 +1568,17 @@ string TransPhase::transformConstructAST(PragmaCustomConstruct construct, ScopeL
                         operandMPIWrites <<"MPI_Send(&"<<rectifiedVarName<<", 1, MPI_"<<upperType<<", 0, "<<_WTAG<<", MPI_COMM_WORLD);\n";
                     }
                     if(!knowedVariable) {
+//                        cout<<"L: "<<line<<endl;
+//                        cout<<"I: "<<iterators<<endl;
                         //                        cout<<"L1: "<<line<<endl;
                         //                        cout<<"Replace "<<firstO<<" for "<<rectifiedVarName<<endl;
-                        line = replaceAll(line, firstO, rectifiedVarName);
+                        string s2change = firstO.substr(0,firstO.find_first_of(iterators));
+                        line = replaceAll(line, s2change, rectifiedVarName);
                         //                        cout<<"L2: "<<line<<endl;
                         //                        
-                        
+                        //cout<<std::string(mpiReads)<<endl;
+//             cout<<"L: "<<line<<endl;
+//            cin.get();
                         hasChanges = 1;
                         thisHasChanges = 1;
                         mpiWrites << operandMPIWrites;
@@ -1533,7 +1592,7 @@ string TransPhase::transformConstructAST(PragmaCustomConstruct construct, ScopeL
                     }
                 }
             }
-            
+           
             newExprSource  << mpiReads <<line<<";" <<"\n"<< mpiWrites;
         }
         
@@ -2115,14 +2174,14 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                         if(line<outline_num_line) {
                             
                             if(!hmppOrig || hmppOrig == 2) {
-                                if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                     if(insideMaster) {
                                         _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst);
                                     }
                                 }
                             } else {
                                 if(inside) {
-                                    if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                         if(insideMaster) {
                                             _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst);
                                         }
@@ -2131,7 +2190,7 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                             }
                         } else {
                             if(!hmppOrig || hmppOrig == 2) {
-                                if(_smart_use_table[actWord].row_first_write_cpu.row > line || _smart_use_table[actWord].row_first_write_cpu.row == 0) {
+                                if((_smart_use_table[actWord].row_first_write_cpu.row > line || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)) {
                                     _smart_use_table[actWord].row_first_write_cpu = fill_use(line,actAst);    
                                 }
                             } 
@@ -2170,13 +2229,13 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                             actWord = findedS.get_name();
                             if(line<outline_num_line) {
                                 if(!hmppOrig || hmppOrig == 2) {
-                                    if(_smart_use_table[actWord].row_last_read_cpu.row < line || _smart_use_table[actWord].row_last_read_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_last_read_cpu.row < line || _smart_use_table[actWord].row_last_read_cpu.row == 0) && isParam(actWord)) {
                                         _smart_use_table[actWord].row_last_read_cpu = fill_use(line,actAst);
                                     }
                                 }  
                             } else {
                                 if(!hmppOrig || hmppOrig == 2) {
-                                    if(_smart_use_table[actWord].row_first_read_cpu.row > line || _smart_use_table[actWord].row_first_read_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_first_read_cpu.row > line || _smart_use_table[actWord].row_first_read_cpu.row == 0) && isParam(actWord)) {
                                         _smart_use_table[actWord].row_first_read_cpu = fill_use(line,actAst);
                                     }
                                 } 
@@ -2224,17 +2283,17 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                             actWord = argument.prettyprint();
                             //                        cout << "//  S: " << argument.prettyprint() << endl;
                             if(!hmpp && hmppOrig!=1) {
-                                if(_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0){
+                                if((_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0) && isParam(actWord)){
                                     _smart_use_table[actWord].row_first_read_cpu = fill_use(offset,actAst);
                                 }
-                                if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                     _smart_use_table[actWord].row_first_write_cpu = fill_use(offset,actAst);
                                     
                                 }
                                 
                             } else {
                                 if(inside) {
-                                    if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                    if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                         _smart_use_table[actWord].row_first_write_cpu = fill_use(maxLinePragma,actAst);
                                     }
                                 }
@@ -2251,17 +2310,17 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                             //                        cout << "//  P: " << argument.prettyprint() << endl;
                             if(!hmpp && hmppOrig!=1) {
                                 
-                                if(_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0){
+                                if((_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0) && isParam(actWord)){
                                     _smart_use_table[actWord].row_first_read_cpu = fill_use(offset,actAst);
                                     
                                 }
-                                if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                     _smart_use_table[actWord].row_first_write_cpu = fill_use(offset,actAst);
                                 }
                                 
                             } else {
                                 if(inside) {
-                                    if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                    if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                         _smart_use_table[actWord].row_first_write_cpu = fill_use(maxLinePragma,actAst);
                                         
                                     }
@@ -2289,17 +2348,17 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                                     //                                cout << "//  R1:  " << actArg << endl;
                                     actWord=actArg;
                                     if(!hmpp && hmppOrig!=1) {
-                                        if(_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0){
+                                        if((_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0) && isParam(actWord)){
                                             _smart_use_table[actWord].row_first_read_cpu = fill_use(offset,actAst);
                                             
                                         }
-                                        if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                        if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                             _smart_use_table[actWord].row_first_write_cpu = fill_use(offset,actAst);
                                         }
                                         
                                     } else {
                                         if(inside) {
-                                            if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                            if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                                 _smart_use_table[actWord].row_first_write_cpu = fill_use(maxLinePragma,actAst);
                                             }
                                         }
@@ -2314,16 +2373,16 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                                 //                            cout << "//  R2:  " << actArg << endl;
                                 actWord=actArg;
                                 if(!hmpp && hmppOrig!=1) {
-                                    if(_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0){
+                                    if((_smart_use_table[actWord].row_first_read_cpu.row>offset || _smart_use_table[actWord].row_first_read_cpu.row == 0) && isParam(actWord)){
                                         _smart_use_table[actWord].row_first_read_cpu = fill_use(offset,actAst);
                                     }
-                                    if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                    if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                         _smart_use_table[actWord].row_first_write_cpu = fill_use(offset,actAst);
                                     }
                                     
                                 } else {
                                     if(inside) {
-                                        if(_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0){
+                                        if((_smart_use_table[actWord].row_first_write_cpu.row>offset || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)){
                                             _smart_use_table[actWord].row_first_write_cpu = fill_use(maxLinePragma,actAst);
                                         }
                                     }
@@ -2353,17 +2412,17 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                                 actWord = actWord.substr(0,actWord.length()-1);
                             if(line<outline_num_line) {
                                 if(!hmppOrig || hmppOrig == 2) {
-                                    if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                         if(insideMaster)
                                             _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst);
                                     }
-                                    if(_smart_use_table[actWord].row_last_read_cpu.row < line || _smart_use_table[actWord].row_last_read_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_last_read_cpu.row < line || _smart_use_table[actWord].row_last_read_cpu.row == 0) && isParam(actWord)) {
                                         _smart_use_table[actWord].row_last_read_cpu = fill_use(line,actAst);
                                     }
                                 } else {
                                     
                                     if(inside) {
-                                        if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                        if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                             if(insideMaster)
                                                 _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst);
                                         }
@@ -2371,17 +2430,17 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                                 }
                             } else {
                                 if(!hmppOrig || hmppOrig == 2) {
-                                    if(_smart_use_table[actWord].row_first_write_cpu.row > line || _smart_use_table[actWord].row_first_write_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_first_write_cpu.row > line || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)) {
                                         _smart_use_table[actWord].row_first_write_cpu = fill_use(line,actAst);    
                                         
                                     }
-                                    if(_smart_use_table[actWord].row_first_read_cpu.row > line || _smart_use_table[actWord].row_first_read_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_first_read_cpu.row > line || _smart_use_table[actWord].row_first_read_cpu.row == 0) && isParam(actWord)) {
                                         _smart_use_table[actWord].row_first_read_cpu = fill_use(line,actAst);    
                                     }
                                 } else {
                                     
                                     if(inside) {
-                                        if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                        if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                             if(insideMaster)
                                                 _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst); 
                                         }
@@ -2399,16 +2458,16 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                             actWord = actWord.substr(0,actWord.length()-1);
                         if(line<outline_num_line) {
                             if(!hmppOrig || hmppOrig == 2) {
-                                if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                     _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst); 
                                 }
-                                if(_smart_use_table[actWord].row_last_read_cpu.row < line || _smart_use_table[actWord].row_last_read_cpu.row == 0) {
+                                if((_smart_use_table[actWord].row_last_read_cpu.row < line || _smart_use_table[actWord].row_last_read_cpu.row == 0) && isParam(actWord)) {
                                     _smart_use_table[actWord].row_last_read_cpu = fill_use(line,actAst); 
                                 }
                             } else {
                                 
                                 if(inside) {
-                                    if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                         if(insideMaster)
                                             _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst); 
                                     }
@@ -2416,17 +2475,17 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
                             }
                         } else {
                             if(!hmppOrig || hmppOrig == 2) {
-                                if(_smart_use_table[actWord].row_first_write_cpu.row > line || _smart_use_table[actWord].row_first_write_cpu.row == 0) {
+                                if((_smart_use_table[actWord].row_first_write_cpu.row > line || _smart_use_table[actWord].row_first_write_cpu.row == 0) && isParam(actWord)) {
                                     if(insideMaster)
                                         _smart_use_table[actWord].row_first_write_cpu = fill_use(line,actAst); 
                                 }
-                                if(_smart_use_table[actWord].row_first_read_cpu.row > line || _smart_use_table[actWord].row_first_read_cpu.row == 0) {
+                                if((_smart_use_table[actWord].row_first_read_cpu.row > line || _smart_use_table[actWord].row_first_read_cpu.row == 0) && isParam(actWord)) {
                                     _smart_use_table[actWord].row_first_read_cpu = fill_use(line,actAst); 
                                 }
                             } else {
                                 
                                 if(inside) {
-                                    if(_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) {
+                                    if((_smart_use_table[actWord].row_last_write_cpu.row < line || _smart_use_table[actWord].row_last_write_cpu.row == 0) && isParam(actWord)) {
                                         if(insideMaster)
                                             _smart_use_table[actWord].row_last_write_cpu = fill_use(line,actAst); 
                                     }
@@ -2591,7 +2650,14 @@ AST_t TransPhase::fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, in
     return lastAst;
 }
 
-
+int TransPhase::isParam(string p2check){
+//    for(int i=0;i<_prmters.size();++i){
+//        if(_prmters[i].get_name().compare(p2check)==0)
+//            return 1;
+//    }
+//    return 0;
+    return 1;
+}
 
 ObjectList<Source> TransPhase::splitMathExpression(Scope sC,std::string secondO, int includeIterators)
 {
@@ -2627,14 +2693,28 @@ ObjectList<Source> TransPhase::splitMathExpression(Scope sC,std::string secondO,
                         i++;
                     
                 }
-                if(math[x].compare("&")==0 || math[x].compare("&")==0) {
+                if(math[x].compare("&")==0) {
                     if(nextChar.compare("&")==0)
                         i++;
                     
                 }
-                if(math[x].compare("|")==0 || math[x].compare("|")==0) {
+                if(math[x].compare("|")==0 ) {
                     if(nextChar.compare("|")==0)
                         i++;
+                    
+                }
+                if(math[x].compare("<")==0) {
+                    if(nextChar.compare("<")==0) {
+                        i++;
+                    }
+                    
+                }
+                if(math[x].compare("-")==0) {
+                    if(nextChar.compare(">")==0) {
+                        cout<<"HI!"<<endl;
+                        i++;
+                        find = 0;
+                    }
                     
                 }
                 
