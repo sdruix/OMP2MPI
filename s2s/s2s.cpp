@@ -887,6 +887,7 @@ int main(int argc, char *argv[]) {
             string includeS = "#include";
             vector<string> includeVector;
             includeVector.push_back("#include <mpi.h>");
+            includeVector.push_back("#include <stdlib.h>");
             while (getline(preprocessFile, line) && !found) {
 
                 // line = cleanWhiteSpaces(line);

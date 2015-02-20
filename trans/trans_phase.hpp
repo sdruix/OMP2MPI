@@ -47,6 +47,7 @@ private:
     int get_size_of_array(string name, string declaration);
     vector<infoVar> fill_vars_info(std::unordered_map <std::string,AST_t> params, TL::HLT::Outline outlineAux, PragmaCustomConstruct construct, Source initVar, Scope functionScope, Scope globalScope, int iNOUT);
     Source generateMPIVariableMessagesSend(vector<infoVar> _inVars, Source initVar, Scope functionScope, string dest, string offset, int withReduced);
+    Source handleMemory(string source);
     Source modifyReductionOperation(infoVar reducedVar, AST_t constructAST, PragmaCustomConstruct construct);
     AST_t _translation_unit;
     ScopeLink _scope_link;
@@ -55,6 +56,8 @@ private:
     vector<infoVar> _inVars;
     int _initialized;
     AST_t _initAST;
+    int _maxManagedVarsCoor;
+    int _lastMaxManagedVarsCoor;
     int _num_transformed_blocks;
     int _finalized;
     int _reducedVarsIndexStart;
@@ -70,6 +73,10 @@ private:
         string _lastFunctionNameList;
         
     };
+    string _RTAG;
+    string _ATAG;
+    string _FTAG;
+    string _WTAG;
     vector<lastAst> _lastTransformInfo;
     //*******************
     struct use{
@@ -114,8 +121,18 @@ private:
     int isIOVar(string name);
     int isINVar(string name);
     int is_inside_master(AST_t ast2check, ScopeLink scopeL, int exprLine, int searching_construct);
-    ObjectList<Source> splitMathExpression(Scope sC,std::string secondO);
+    ObjectList<Source> splitMathExpression(Scope sC,std::string secondO, int includeIterators);
+    string rectifyName(string oldName);
+    void completeLoopsInAST(AST_t ast, ScopeLink scopeL);
+    string replaceAll(std::string str, const std::string& from, const std::string& to);
     AST_t fill_smart_use_table(AST_t asT, ScopeLink scopeL, Scope sC, int outline_num_line, ObjectList<Symbol> prmters , int hmppOrig, int offset, AST_t prevAST);
+    string transformConstructAST(PragmaCustomConstruct construct, ScopeLink scopeL, Scope sC, Source initVar);
+    int _withMemoryLimitation;
+    int _oldMPIStyle;
+    void useOldStyle(int staticC, Source mpiVariantStructurePart1, Source mpiVariantStructurePart2, Source mpiVariantStructurePart3, 
+                            string maxS, Source initVar, Scope functionScope, Source initValue, 
+                            Source conditionToWork, Source mpiFixStructurePart1, Source mpiFixStructurePart2, Statement function_body,
+                            PragmaCustomConstruct construct, Source constructASTS, Source initType);
     class TraverseASTFunctor4LocateUse : public TraverseASTFunctor {
     private:
         ScopeLink _slLU;
@@ -235,8 +252,6 @@ private:
         {
             
             bool retBool = false;
-            //                std::cout<<"a6: "<<a.prettyprint()<<"\n";  
-            //                 std::cin.get();
             if (!Expression::predicate(a)) {
                 std::istringstream f(a.prettyprint());
                 std::string line;    
@@ -247,8 +262,6 @@ private:
                 if(lines>1){
                     PragmaCustomConstruct test(a,_sl);
                     if(test.is_construct()){
-                        //                                std::cout<<"a69: "<<a.prettyprint()<<"\n";  
-                        //                                std::cin.get();
                         retBool = true;
                         return ast_traversal_result_helper(retBool,false);
                     } 
