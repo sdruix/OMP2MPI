@@ -32,7 +32,7 @@ TransPhase::TransPhase() : PragmaCustomCompilerPhase("omp") {
     _WTAG = "WTAG";
     _FTAG = "FTAG";
     _withMemoryLimitation = 1;
-    _oldMPIStyle = 1;
+    _oldMPIStyle = 0;
 }
 
 void TransPhase::run(DTO& dto) {

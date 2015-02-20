@@ -175,7 +175,7 @@ void testFile(string filename, string logFolder, int extKind, int step, string l
         setOMPthreats << "OMP_NUM_THREADS=" << i;
         putenv((char *) setOMPthreats.str().c_str());
         cout << "Checking the enviroment variable OMP_NUM_THREADS" << endl;
-        unsigned int thread_qty = std::max(atoi(std::getenv("OMP_NUM_THREADS")), 1);
+        int thread_qty = std::max(atoi(std::getenv("OMP_NUM_THREADS")), 1);
         if (thread_qty != i) {
             cerr << "ERROR: threads not set to: " << i << " actThreads = " << thread_qty << endl;
 
