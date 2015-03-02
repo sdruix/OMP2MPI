@@ -140,7 +140,7 @@ void testFile(string filename, string logFolder, int extKind, int step, string l
     if (!step) {
         std::cout << "With OpenMP...\n";
         if (extKind) {
-            checkFile2transMP << "g++ " << filename_justOMP.str().c_str() << " -std=c99  -fopenmp -lm -o MP.out";
+            checkFile2transMP << "g++ " << filename_justOMP.str().c_str() << "   -fopenmp -lm -o MP.out";
         } else {
             checkFile2transMP << "gcc " << filename_justOMP.str().c_str() << " -std=c99  -fopenmp -lm -o MP.out";
         }
@@ -155,7 +155,7 @@ void testFile(string filename, string logFolder, int extKind, int step, string l
     if (withNOOMP) {
         cout << "Without OpenMP...\n";
         if (extKind) {
-            checkFile2trans << "g++ " << filename_withoutOMP.str().c_str() << " -std=c99 -lm -o noMP.out";
+            checkFile2trans << "g++ " << filename_withoutOMP.str().c_str() << "  -lm -o noMP.out";
         } else {
             checkFile2trans << "gcc " << filename_withoutOMP.str().c_str() << " -std=c99 -lm -o noMP.out";
         }
@@ -409,7 +409,7 @@ void compile(vector<string> files, string cP, string codesDir, string execDir, i
                 std::stringstream complilationCommand, complilationCommandV;
                 string name = files[i].substr(0, files[i].length() - 4);
                 name = name.substr(name.find_last_of("/") + 1, name.length());
-                complilationCommand << "mpic++ -std=c99 -fopenmp -lm -o ./"
+                complilationCommand << "mpic++ -fopenmp -lm -o ./"
                         << codesDir << "/" << execDir
                         << "/" << name << ".out ./"
                         << files[i]
@@ -422,7 +422,7 @@ void compile(vector<string> files, string cP, string codesDir, string execDir, i
                 }
                 cout << "------------------------------------------------\n";
                 if (verbose) {
-                    complilationCommand << "mpic++ -std=c99 -fopenmp -lm -o ./"
+                    complilationCommand << "mpic++  -fopenmp -lm -o ./"
                             << codesDir << "/" << execDir
                             << "/" << name << ".out ./"
                             << files[i] << "\n";
@@ -948,7 +948,7 @@ int main(int argc, char *argv[]) {
             std::stringstream nameF, nameOUT, commandOUT;
             if (extKind) {
                 nameOUT << codesFolder << "/" << name << ".cpp";
-                commandOUT << "trans-phasec++ -y " << tempName << " -o " << nameOUT.str() << " -std=c99 -I/usr/lib/openmpi/include/ " << std::endl;
+                commandOUT << "trans-phasec++ -y " << tempName << " -o " << nameOUT.str() << "  -I/usr/lib/openmpi/include/ " << std::endl;
             } else {
                 nameOUT << codesFolder << "/" << name << ".c";
                 commandOUT << "trans-phasecc -y " << tempName << " -o " << nameOUT.str() << " -std=c99 -I/usr/lib/openmpi/include/ " << std::endl;

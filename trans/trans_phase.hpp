@@ -30,7 +30,7 @@ class TransPhase : public PragmaCustomCompilerPhase {
         Source operation;
         Source type; 
         ObjectList<string> size;
-        Source iterVar;
+        ObjectList<Source> iterVar;
         int iterVarInOperation;
     };
 public:
@@ -39,16 +39,19 @@ public:
 private:
     void finalize();
     string addCommaIfNeeded(string arrayToCheck);
-    Source findPrincipalIterator(AST_t varUse, string name);
+    int iteratedVarCorrespondstoAnyVarIdx(string initVar, ObjectList<Source> iter);
+    ObjectList<Source> findPrincipalIterator(string varUse, string name);
     AST_t getForContextofConstruct(AST_t ast2check, ScopeLink scopeL, int exprLine, int searching_construct);
     string cleanWhiteSpaces(string toClean);
     void pragma_postorder(PragmaCustomConstruct construct);
-    bool checkFor(PragmaCustomConstruct construct);
+    bool checkDirective(PragmaCustomConstruct construct, string directiveName);
     int get_size_of_array(string name, string declaration);
-    vector<infoVar> fill_vars_info(std::unordered_map <std::string,AST_t> params, TL::HLT::Outline outlineAux, PragmaCustomConstruct construct, Source initVar, Scope functionScope, Scope globalScope, int iNOUT);
+    vector<infoVar> fill_vars_info(std::unordered_map <std::string,ObjectList<AST_t>> params, TL::HLT::Outline outlineAux, PragmaCustomConstruct construct, Source initVar, Scope functionScope, Scope globalScope, int iNOUT);
     Source generateMPIVariableMessagesSend(vector<infoVar> _inVars, Source initVar, Scope functionScope, string dest, string offset, int withReduced);
     Source handleMemory(string source);
     Source modifyReductionOperation(infoVar reducedVar, AST_t constructAST, PragmaCustomConstruct construct);
+    void putBarrier(int minLine, int staticC, int block_line, PragmaCustomConstruct construct, Symbol function_sym, Statement function_body, AST_t minAST);
+    int isUploadedVar(string name);
     AST_t _translation_unit;
     ScopeLink _scope_link;
     vector<infoVar> _reducedVars;
@@ -60,9 +63,12 @@ private:
     int _lastMaxManagedVarsCoor;
     int _num_transformed_blocks;
     int _finalized;
+    int _isForDirective;
     int _reducedVarsIndexStart;
     int _construct_num_loop;
     int _construct_inside_bucle;
+    int _secureWrite;
+    vector<string> _uploadedVars;
     AST_t _construct_loop;
     ObjectList<string> _privateVars;
     string _lastFunctionName;
@@ -77,6 +83,7 @@ private:
     string _ATAG;
     string _FTAG;
     string _WTAG;
+    string _SWTAG;
     vector<lastAst> _lastTransformInfo;
     //*******************
     struct use{
@@ -103,8 +110,8 @@ private:
     ObjectList<Symbol> _prmters;
     typedef unordered_map <string, var_use> Mymap; 
     unordered_map <string, var_use> _smart_use_table;
-    std::unordered_map <std::string,AST_t> _ioParams;
-    std::unordered_map <std::string,AST_t> _inParams;
+    std::unordered_map <std::string,ObjectList<AST_t>> _ioParams;
+    std::unordered_map <std::string,ObjectList<AST_t>> _inParams;
     
     //****************************
     DTO _dto;
@@ -148,9 +155,17 @@ private:
         {
             
             bool retBool = false;
-            
+
+//                cout<<"---------------------------------"<<endl;
+//                cout<<a.prettyprint()<<endl;
+//                cout<<a.prettyprint().find("++")<<endl;
+//                cout<<a.prettyprint().length()-3<<endl;
+//                cin.get();
+
             if (Expression::predicate(a)) {
                 Expression expr(a, _slLU);
+//                cout<<"as. "<<a.prettyprint()<<endl;
+//                cin.get();
                 if(expr.is_assignment()){
                     retBool = true;
                 }
@@ -160,6 +175,10 @@ private:
                 
                 if(expr.is_operation_assignment()){
                     retBool = true;
+                }
+                if(a.prettyprint().find("++")==0 || a.prettyprint().find("++")==a.prettyprint().length()-3
+                    || a.prettyprint().find("--")==0 || a.prettyprint().find("--")<a.prettyprint().length()-3) {
+                        retBool = true;
                 }
                 
                 return ast_traversal_result_helper(retBool,false);
