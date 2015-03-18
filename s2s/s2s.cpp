@@ -340,11 +340,13 @@ std::string getFileExtension(const std::string& FileName) {
 }
 
 string cleanWhiteSpaces(string toClean) {
-    while (std::string(toClean).find_first_of(" ") == 0) {
-        toClean = std::string(toClean).substr(1, std::string(toClean).length());
-    }
-    while (std::string(toClean).find_first_of(" ") < std::string(toClean).length()) {
-        toClean = std::string(toClean).substr(0, std::string(toClean).length() - 1);
+    if(!toClean.empty()) {
+        while(std::string(toClean).find_first_of(" ")==0){                       
+            toClean = std::string(toClean).substr(1,std::string(toClean).length());
+        }
+        while(std::string(toClean).find_last_of(" ")==std::string(toClean).length()-1){
+            toClean = std::string(toClean).substr(0,std::string(toClean).length()-1);
+        }
     }
     return toClean;
 }
